@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>حبيبتي</title>
+    <style>
+      /* ================= التصميم الأساسي ================= */
+      @import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Tajawal", sans-serif;
+        user-select: none;
+      }
+
+      body {
+        /* هنا هتحط صورة الورقة المكرمشة كخلفية */
+        background-color: #fdf6e3; /* لون مبدئي أوف وايت */
+        background-image: url("Media/23010648094362300.jpeg"); /* حط اسم صورة الورقة هنا */
+        background-size: cover;
+        background-position: center;
+        overflow: hidden; /* عشان نمنع الشاشة تتحرك يمين وشمال */
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+      }
+
+      /* زرار الموسيقى */
+      #musicBtn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 2px solid #e5989b;
+        padding: 10px 15px;
+        border-radius: 20px;
+        color: #d55d60;
+        font-weight: bold;
+        z-index: 1000;
+      }
+
+      .stage {
+        display: none;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        text-align: center;
+      }
+
+      .active {
+        display: flex;
+      }
+
+      /* ================= الصفحة الأولى ================= */
+      #mainGif {
+        width: 200px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+      h1 {
+        color: #5a4a42;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+      }
+
+      .buttons-container {
+        display: flex;
+        gap: 20px;
+        position: relative;
+        width: 100%;
+        justify-content: center;
+      }
+
+      button {
+        padding: 15px 30px;
+        font-size: 1.5rem;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        font-weight: bold;
+      }
+
+      #yesBtn {
+        background-color: #9dc08b;
+        color: white;
+        box-shadow: 0 4px 10px rgba(157, 192, 139, 0.5);
+      }
+      #noBtn {
+        background-color: #e5989b;
+        color: white;
+        box-shadow: 0 4px 10px rgba(229, 152, 155, 0.5);
+      }
+
+      /* سقوط الورد */
+      .petal {
+        position: absolute;
+        top: -10%;
+        width: 20px;
+        height: 20px;
+        background: #ffb7b2;
+        border-radius: 50% 0 50% 50%;
+        opacity: 0.8;
+        animation: fall linear infinite;
+        z-index: 0;
+      }
+      @keyframes fall {
+        to {
+          transform: translateY(110vh) rotate(360deg);
+        }
+      }
+
+      /* ================= الصفحة الثانية (الصناديق) ================= */
+      .boxes-wrapper {
+        display: flex;
+        gap: 20px;
+      }
+      .box {
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 3px dashed #e5989b;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .box img.gift-img {
+        width: 100%;
+        border-radius: 10px;
+      }
+      .lock-icon {
+        position: absolute;
+        width: 100%;
+        border-radius: 10px;
+        z-index: 10;
+      }
+
+      /* حاوية الصور والكلام */
+      /* .content-overlay {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(253, 246, 227, 0.95);
+        z-index: 50;
+      } */
+      /* .back-btn {
+        margin-top: 30px;
+        background: #5a4a42;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+      } */
+      /* حاوية الصور بدون سكرول */
+      .content-overlay {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* عشان نجيبهم في نص الشاشة بالظبط */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(253, 246, 227, 0.98);
+        z-index: 50;
+        overflow: hidden; /* قفلنا السكرول تماماً */
+      }
+
+      /* شبكة الصور (الجريد) */
+      .photos-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* هيقسمهم لعمودين جنب بعض */
+        gap: 15px; /* المسافة بين الصور */
+        width: 85%; /* عرض الشبكة بالنسبة للشاشة */
+        margin-bottom: 20px;
+      }
+
+      /* تصميم وحجم الصور جوه الجريد */
+      .photos-container img {
+        width: 100%;
+        height: 120px; /* طول ثابت عشان كلهم يبقوا نفس المقاس وميطلعوش بره الشاشة */
+        object-fit: cover; /* السطر ده سحري: بيقص الصورة بشكل متناسق عشان متتمطش أو تبوظ */
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        border: 3px solid white;
+      }
+
+      /* لمسة احترافية: عشان دول 5 صور، هنخلي الصورة الخامسة والأخيرة تاخد العرض كله */
+      .photos-container img:last-child:nth-child(odd) {
+        grid-column: span 2;
+        height: 140px; /* كبرناها شوية عشان تبقى مميزة */
+      }
+
+      /* زرار الرجوع */
+      .back-btn {
+        background: #9dc08b;
+        color: white;
+        padding: 12px 35px;
+        border-radius: 20px;
+        font-size: 1.2rem;
+        border: none;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(157, 192, 139, 0.5);
+        cursor: pointer;
+      }
+
+      /* ================= سؤال "روح" ================= */
+      .question-box {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border: 2px solid #e5989b;
+      }
+      #nameInput {
+        padding: 10px;
+        font-size: 1.5rem;
+        text-align: center;
+        border: 2px solid #9dc08b;
+        border-radius: 10px;
+        margin: 20px 0;
+        width: 80%;
+      }
+
+      /* ================= العد التنازلي ================= */
+      #countdownNumber {
+        font-size: 8rem;
+        color: #e5989b;
+        font-weight: bold;
+        text-shadow: 2px 2px 10px rgba(229, 152, 155, 0.8);
+      }
+
+      /* ================= النهاية السعيدة ================= */
+      #finaleStage {
+        background: #000;
+        color: white;
+      }
+
+      /* نجوم متحركة للخلفية السوداء */
+
+      #starfield {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+
+      .finale-content {
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      /* .finale-gifs img {
+        width: 100px;
+        border-radius: 10px;
+        margin: 5px;
+      } */
+      .heart-final {
+        width: 250px;
+        animation: heartbeat 1.5s infinite;
+      }
+      /* .pink-text {
+        color: #ff6699;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-top: 20px;
+        text-shadow: 0 0 10px rgba(255, 102, 153, 0.8);
+      } */
+      /* تنسيق صور الـ GIF في النهاية */
+      .finale-gif {
+        width: 180px; /* كبرناها شوية عشان تبان في الفضاء */
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255, 102, 153, 0.4);
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      /* تنسيق القلب النهائي */
+      .heart-final {
+        width: 150px;
+        animation: heartbeat 1.5s infinite;
+      }
+
+      /* تأثير الموجة لكلمة I LOVE YOU */
+      .wavy-text {
+        display: flex;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+        margin-top: 25px;
+        color: #ff6699;
+        text-shadow: 0 0 15px rgba(255, 102, 153, 0.8);
+        direction: ltr;
+      }
+
+      .wavy-text span {
+        display: inline-block;
+        animation: waveAnimation 1.5s infinite ease-in-out;
+        /* السطر الجاي ده هو السحر اللي بيخلي كل حرف يتأخر عن اللي قبله ويعمل الموجة */
+        animation-delay: calc(0.1s * var(--i));
+      }
+
+      @keyframes waveAnimation {
+        0%,
+        40%,
+        100% {
+          transform: translateY(0);
+        }
+        20% {
+          transform: translateY(-20px);
+        } /* ارتفاع النطة بتاعة الحرف */
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes heartbeat {
+        0% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.1);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.1);
+        }
+        70% {
+          transform: scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- صوت الأغنية الأولى (بتاعة أول الموقع) -->
+    <audio id="bgMusic" loop>
+      <source src="Media/song.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- صوت أغنية الفضاء (الجديدة) -->
+    <audio id="spaceMusic" loop>
+      <!-- حط اسم أغنية الفضاء هنا -->
+      <source src="Media/space_song.mp3" type="audio/mpeg" />
+    </audio>
+    <button id="musicBtn">تشغيل الأغنية 🎵</button>
+
+    <!-- المرحلة 1: السؤال والهروب -->
+    <div id="stage1" class="stage active">
+      <!-- حط اسم الـ GIF الأول هنا -->
+      <img id="mainGif" src="Media/Cat Love GIF by sillynub.gif" alt="cute" />
+      <h1 style="z-index: 10">هل بتحبيني؟!</h1>
+      <div class="buttons-container" id="btnsContainer">
+        <button id="yesBtn">بحبك 💚</button>
+        <button id="noBtn">مش بتحبيني 💔</button>
+      </div>
+    </div>
+
+    <!-- المرحلة 2: الصناديق -->
+    <div id="stage2" class="stage">
+      <h1>هداياكي الخاصة 🎁</h1>
+      <div class="boxes-wrapper">
+        <!-- الصندوق اليمين (الصور) -->
+        <div class="box" id="box1" style="cursor: pointer">
+          <!-- حط صورة الصندوق أو الهدية هنا -->
+          <img src="Media/picutre.jpeg" class="gift-img" />
+        </div>
+
+        <!-- الصندوق الشمال (الكلام - مقفول) -->
+        <div class="box" id="box2">
+          <!-- حط صورة القفل هنا -->
+          <img src="Media/heart lock.jpeg" class="lock-icon" id="lockIcon" />
+          <!-- حط صورة الصندوق أو الجواب هنا -->
+          <img src="Media/letter.jpeg" class="gift-img" />
+        </div>
+      </div>
+    </div>
+
+    <!-- تراكب الصور (بيظهر لما تفتح الصندوق اليمين) -->
+    <div id="photosOverlay" class="content-overlay">
+      <h2 style="color: #5a4a42; margin-bottom: 25px">صور عيلتنا📸</h2>
+
+      <div class="photos-container">
+        <img src="Media/cat1.jpeg" />
+        <img src="Media/cat2.jpeg" />
+        <img src="Media/cat3.jpeg" />
+        <img src="Media/cat4.jpeg" />
+        <img src="Media/cat5.jpeg" style="height: 250px" />
+      </div>
+
+      <button class="back-btn" id="backFromPhotos">رجوع</button>
+    </div>
+
+    <!-- تراكب الكلام (بيظهر لما تفتح الصندوق الشمال) -->
+    <div id="textOverlay" class="content-overlay">
+      <h2>أحلى كلام من قلبي ❤️</h2>
+      <p style="font-size: 1.5rem; color: #5a4a42; padding: 20px">
+        احبك انت روح قلبي و كل حياتي امححححححححححح❤️ (شو لابسة)
+      </p>
+    </div>
+
+    <!-- المرحلة 3: سؤال الاسم -->
+    <div id="stage3" class="stage" style="z-index: 100; background: #fdf6e3">
+      <div class="question-box">
+        <h1>اسم بنتنا إيه؟ 👧🏻</h1>
+        <input type="text" id="nameInput" placeholder="اكتبي الاسم هنا..." />
+        <br />
+        <button
+          id="checkNameBtn"
+          style="background: #e5989b; color: white; margin-top: 15px"
+        >
+          تأكيد
+        </button>
+        <p id="errorMsg" style="color: red; display: none; margin-top: 10px">
+          إجابة غلط يا روحي، حاولي تاني!
+        </p>
+      </div>
+    </div>
+
+    <!-- المرحلة 4: العد التنازلي -->
+    <div id="stage4" class="stage" style="background: #fdf6e3">
+      <div id="countdownNumber">5</div>
+    </div>
+
+    <!-- المرحلة 5: النهاية الكبرى -->
+    <!-- المرحلة 5: النهاية الكبرى -->
+    <div id="finaleStage" class="stage">
+      <canvas id="starfield"></canvas>
+      <div class="finale-content">
+        <!-- صور الـ GIF اللي هتظهر بالترتيب -->
+        <img
+          id="finalGif1"
+          src="Media/cat1.gif"
+          class="finale-gif"
+          style="display: none"
+        />
+        <img
+          id="finalGif2"
+          src="Media/catDance.gif"
+          class="finale-gif"
+          style="display: none"
+        />
+        <img
+          id="finalGif3"
+          src="Media/catCuddle.gif"
+          class="finale-gif"
+          style="display: none"
+        />
+
+        <!-- القلب اللي هيفضل ثابت في الآخر -->
+        <img
+          id="finalHeart"
+          src="Media/heart.png"
+          class="heart-final"
+          style="display: none"
+        />
+
+        <!-- كلمة I LOVE YOU بتأثير الموجة (هتظهر مع القلب في الآخر) -->
+        <div class="wavy-text" id="wavyText" style="display: none">
+          <span style="--i: 1">I</span>
+          <span style="--i: 2">&nbsp;</span>
+          <span style="--i: 3">L</span>
+          <span style="--i: 4">O</span>
+          <span style="--i: 5">V</span>
+          <span style="--i: 6">E</span>
+          <span style="--i: 7">&nbsp;</span>
+          <span style="--i: 8">Y</span>
+          <span style="--i: 9">O</span>
+          <span style="--i: 10">U</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= كود الأكشن (الجافا سكريبت) ================= -->
+    <script>
+      // الأغنية
+      const musicBtn = document.getElementById("musicBtn");
+      const bgMusic = document.getElementById("bgMusic");
+      musicBtn.addEventListener("click", () => {
+        bgMusic.play();
+        musicBtn.style.display = "none"; // هنخفي الزرار بعد ما الأغنية تشتغل
+      });
+
+      // تأثير تساقط الورد في الصفحة الأولى
+      function createPetal() {
+        if (!document.getElementById("stage1").classList.contains("active"))
+          return;
+        const petal = document.createElement("div");
+        petal.classList.add("petal");
+        petal.style.left = Math.random() * 100 + "vw";
+        petal.style.animationDuration = Math.random() * 3 + 2 + "s"; // سرعة السقوط
+        document.getElementById("stage1").appendChild(petal);
+        setTimeout(() => {
+          petal.remove();
+        }, 5000);
+      }
+      setInterval(createPetal, 300);
+
+      // هروب الزرار الأحمر
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const mainGif = document.getElementById("mainGif");
+      let yesScale = 1;
+
+      // الدالة دي بتشتغل لما تحاول تلمس الزرار الأحمر
+      // الدالة دي بتشتغل لما تضغط على الزرار الأحمر
+      function fleeBtn() {
+        // حط هنا اسم صورة الـ GIF التانية اللي بتظهر لما تدوس "مش بحبك"
+        mainGif.src = "Media/angry.jpeg";
+
+        // تصغير زرار الرفض وتكبير زرار القبول
+        yesScale += 0.3;
+        yesBtn.style.transform = `scale(${yesScale})`;
+        noBtn.style.transform = `scale(0.8)`;
+
+        // التعديل هنا: هنخلي الزرار حر بالنسبة لشاشة الموبايل نفسها
+        noBtn.style.position = "fixed";
+
+        // نحسب أقصى مسافة في الشاشة (عرض وطول) ونطرح منها حجم الزرار وهامش أمان 30 بكسل
+        const maxX = window.innerWidth - noBtn.offsetWidth - 30;
+        const maxY = window.innerHeight - noBtn.offsetHeight - 30;
+
+        // نختار مكان عشوائي بشرط ميكونش أقل من 20 بكسل (عشان ميلزقش في أطراف الشاشة)
+        const randomX = Math.max(20, Math.random() * maxX);
+        const randomY = Math.max(20, Math.random() * maxY);
+
+        // نحرك الزرار للمكان الجديد
+        noBtn.style.left = randomX + "px";
+        noBtn.style.top = randomY + "px";
+      }
+
+      // يشتغل على اللمس (للموبايل) وعلى الماوس
+      noBtn.addEventListener("click", fleeBtn);
+
+      // الدخول للصفحة التانية (الصناديق)
+      yesBtn.addEventListener("click", () => {
+        document.getElementById("stage1").classList.remove("active");
+        document.getElementById("stage2").classList.add("active");
+      });
+
+      // لوجيك الصناديق
+      let isBox2Unlocked = false;
+      const box1 = document.getElementById("box1");
+      const box2 = document.getElementById("box2");
+      const lockIcon = document.getElementById("lockIcon");
+
+      box1.addEventListener("click", () => {
+        document.getElementById("photosOverlay").style.display = "flex";
+      });
+
+      document
+        .getElementById("backFromPhotos")
+        .addEventListener("click", () => {
+          document.getElementById("photosOverlay").style.display = "none";
+          // نفتح القفل من على الصندوق التاني
+          lockIcon.style.display = "none";
+          isBox2Unlocked = true;
+          box2.style.cursor = "pointer";
+        });
+
+      box2.addEventListener("click", () => {
+        if (isBox2Unlocked) {
+          document.getElementById("textOverlay").style.display = "flex";
+
+          // هنا التايمر: بعد 20 ثانية (20000 ملي ثانية) هيظهر سؤال الاسم
+          setTimeout(() => {
+            document.getElementById("textOverlay").style.display = "none";
+            document.getElementById("stage2").classList.remove("active");
+            document.getElementById("stage3").classList.add("active");
+          }, 8000);
+        }
+      });
+
+      // لوجيك سؤال الاسم "روح"
+      const checkNameBtn = document.getElementById("checkNameBtn");
+      const nameInput = document.getElementById("nameInput");
+      const errorMsg = document.getElementById("errorMsg");
+
+      checkNameBtn.addEventListener("click", () => {
+        if (nameInput.value.trim() === "روح") {
+          document.getElementById("stage3").classList.remove("active");
+          document.getElementById("stage4").classList.add("active");
+          startCountdown();
+        } else {
+          errorMsg.style.display = "block";
+        }
+      });
+
+      // العد التنازلي من 5 لـ 1
+      // العد التنازلي من 5 لـ 1
+      // العد التنازلي من 5 لـ 1
+      function startCountdown() {
+        let count = 5;
+        const countDisplay = document.getElementById("countdownNumber");
+        const timer = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countDisplay.innerText = count;
+          } else {
+            clearInterval(timer);
+            document.getElementById("stage4").classList.remove("active");
+            document.getElementById("finaleStage").classList.add("active");
+
+            // تشغيل الأنيميشن بتاع الفضاء
+            animateSpace();
+
+            // تغيير الأغنية
+            const bgMusic = document.getElementById("bgMusic");
+            const spaceMusic = document.getElementById("spaceMusic");
+            bgMusic.pause();
+            spaceMusic.play();
+
+            // ==========================================
+            // تسلسل ظهور الصور (هنا بتحدد الثواني)
+            // 1000 = ثانية واحدة
+            // ==========================================
+            const timeGif1 = 11000; // GIF الأول هيظهر لمدة 3 ثواني
+            const timeGif2 = 7000; // GIF التاني لمدة 3 ثواني
+            const timeGif3 = 5000; // GIF التالت لمدة 3 ثواني
+
+            const gif1 = document.getElementById("finalGif1");
+            const gif2 = document.getElementById("finalGif2");
+            const gif3 = document.getElementById("finalGif3");
+            const heart = document.getElementById("finalHeart");
+            const wavyText = document.getElementById("wavyText");
+
+            // أظهر الصورة الأولى فوراً
+            gif1.style.display = "block";
+
+            // بعد ما يخلص وقت الصورة الأولى.. أخفيها وأظهر التانية
+            setTimeout(() => {
+              gif1.style.display = "none";
+              gif2.style.display = "block";
+
+              // بعد ما يخلص وقت الصورة التانية.. أخفيها وأظهر التالتة
+              setTimeout(() => {
+                gif2.style.display = "none";
+                gif3.style.display = "block";
+
+                // بعد ما يخلص وقت الصورة التالتة.. أخفيها وأظهر القلب والكلمة
+                setTimeout(() => {
+                  gif3.style.display = "none";
+                  heart.style.display = "block";
+                  wavyText.style.display = "flex"; // إظهار كلمة I LOVE YOU
+                }, timeGif3);
+              }, timeGif2);
+            }, timeGif1);
+          }
+        }, 1000);
+      }
+      // ================= تأثير الفضاء والنجوم 3D =================
+      const canvas = document.getElementById("starfield");
+      const ctx = canvas.getContext("2d");
+      let stars = [];
+      const numStars = 400; // عدد النجوم
+      const speed = 3; // سرعة الاندفاع في الفضاء
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // تكوين النجوم
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width - canvas.width / 2,
+          y: Math.random() * canvas.height - canvas.height / 2,
+          z: Math.random() * canvas.width,
+          pz: Math.random() * canvas.width,
+        });
+      }
+
+      function animateSpace() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)"; // الشفافية دي بتعمل تأثير الديل (Trail) للنجوم
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        for (let i = 0; i < stars.length; i++) {
+          let star = stars[i];
+          star.pz = star.z;
+          star.z -= speed;
+
+          if (star.z <= 0) {
+            star.z = canvas.width;
+            star.pz = canvas.width;
+            star.x = Math.random() * canvas.width - canvas.width / 2;
+            star.y = Math.random() * canvas.height - canvas.height / 2;
+          }
+
+          // حساب المنظور 3D
+          const px = (star.x / star.z) * cx + cx;
+          const py = (star.y / star.z) * cy + cy;
+          const ppx = (star.x / star.pz) * cx + cx;
+          const ppy = (star.y / star.pz) * cy + cy;
+
+          // رسم النجمة
+          ctx.beginPath();
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = (1 - star.z / canvas.width) * 3;
+          ctx.moveTo(ppx, ppy);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+        }
+        requestAnimationFrame(animateSpace);
+      }
+    </script>
+  </body>
+</html>
